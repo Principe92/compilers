@@ -69,7 +69,24 @@ val fullname = first ^ " " ^ last;
 (* Determine the length of the string from the last item with the size function *)
 size fullname;
 
-(* Successfully evaluate the following expressions to a boolean value in the SML
+(*4. Successfully evaluate the following expressions to a boolean value in the SML
 * interpreter (3 points): *)
+val _ = print "\n\nPart 4:\n\n";
 
+(* 5 is less than 10 *)
+5 < 10;
 
+(* -5 is less than -7 *)
+~5 < ~7;
+
+(* pie is less than 10 *)
+3.14 <= 10.0;
+
+(* 12 is equal to 12 *)
+12 = 2;
+
+(* 12 is not equal to 24 *)
+12 <> 24;
+
+(* character a is less than character A *)
+#"a" < #"A";

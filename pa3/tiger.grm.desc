@@ -1,0 +1,120 @@
+1 shift/reduce conflict
+
+error:  state 3: shift/reduce conflict (shift VAR, reduce by rule 1)
+
+state 0:
+
+	program : . stm 
+
+	VAR	shift 2
+
+	program	goto 10
+	stm	goto 1
+
+	.	error
+
+
+state 1:
+
+	program : stm .  (reduce by rule 0)
+	stm : stm . stm 
+
+	VAR	shift 2
+
+	stm	goto 3
+
+	.	reduce by rule 0
+
+
+state 2:
+
+	stm : VAR . ID ASSIGN exp 
+
+	ID	shift 4
+
+
+	.	error
+
+error:  state 3: shift/reduce conflict (shift VAR, reduce by rule 1)
+
+state 3:
+
+	stm : stm . stm 
+	stm : stm stm .  (reduce by rule 1)
+
+	VAR	shift 2
+
+	stm	goto 3
+
+	.	reduce by rule 1
+
+
+state 4:
+
+	stm : VAR ID . ASSIGN exp 
+
+	ASSIGN	shift 5
+
+
+	.	error
+
+
+state 5:
+
+	stm : VAR ID ASSIGN . exp 
+
+	ID	shift 9
+	INT	shift 8
+	STRING	shift 7
+
+	exp	goto 6
+
+	.	error
+
+
+state 6:
+
+	stm : VAR ID ASSIGN exp .  (reduce by rule 2)
+
+
+
+	.	reduce by rule 2
+
+
+state 7:
+
+	exp : STRING .  (reduce by rule 5)
+
+
+
+	.	reduce by rule 5
+
+
+state 8:
+
+	exp : INT .  (reduce by rule 4)
+
+
+
+	.	reduce by rule 4
+
+
+state 9:
+
+	exp : ID .  (reduce by rule 3)
+
+
+
+	.	reduce by rule 3
+
+
+state 10:
+
+
+	EOF	accept
+
+
+	.	error
+
+9 of 20 action table entries left after compaction
+5 goto table entries

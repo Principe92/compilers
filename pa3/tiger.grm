@@ -1,0 +1,93 @@
+%%
+%term
+    EOF 
+  | ID of string
+  | INT of int | STRING of string 
+  | COMMA | COLON | SEMICOLON | LPAREN | RPAREN | LBRACK | RBRACK 
+  | LBRACE | RBRACE | DOT 
+  | PLUS | MINUS | UMINUS | TIMES | DIVIDE | EQ | NEQ | LT | LE | GT | GE
+  | AND | OR | ASSIGN
+  | ARRAY | IF | THEN | ELSE | WHILE | FOR | TO | DO | LET | IN | END | OF 
+  | BREAK | NIL
+  | FUNCTION | VAR | TYPE 
+
+%nonterm  exp | program | stm | stmlist | be | ae | ty | tyfds | tydec | vardec | fundec | lvalue | tyid
+
+%pos int
+%verbose
+%start program
+%eop EOF
+%noshift EOF
+
+%left PLUS MINUS
+%left TIMES DIVIDE
+%left UMINUS
+%left OR
+%left AND
+%nonassoc EQ NEQ
+
+
+%name Tiger
+
+%keyword WHILE FOR TO BREAK LET IN END FUNCTION VAR TYPE ARRAY IF THEN ELSE 
+	DO OF NIL
+
+%prefer THEN ELSE LPAREN
+
+%value ID ("bogus")
+%value INT (1)
+%value STRING ("")
+
+%%
+
+program	: stmlist		        (print("program -> stmlist\n"))
+
+stmlist : stm                           (print("stmlist -> stm\n"))
+        | stmlist stm                   (print("stmlist -> stmlist stm"))
+        | stmlist SEMICOLON stm         (print("stmlist -> stmlist SEMICOLON stm"))
+
+stm     : vardec                        (print("stm -> vardec"))
+        | tydec                         (print("stm -> tydec"))
+        | fundec                        (print("stm -> fundec"))
+        | ID ASSIGN ae                  (print("stm -> ID ASSIGN ae"))
+        | ID ASSIGN be                  (print("stm -> ID ASSIGN be"))
+        | WHILE ID DO stm               (print("stm -> WHILE ID DO stm"))
+        | BEGIN stmlist END             (print("stm -> BEGIN stmlist END"))
+        | IF ID THEN stm                (print("stm -> IF ID THEN stm"))
+        | IF ID THEN stm ELSE stm       (print("stm -> IF ID THEN stm ELSE stm"))
+
+tydec   : TYPE ID ASSIGN ty             (print("tydec -> TYPE ID ASSIGN ty"))
+
+vardec  : VAR ID ASSIGN exp             (print("vardec -> VAR ID ASSIGN exp"))
+        | VAR ID COLON tyid ASSIGN exp  (print("vardec -> VAR ID COLON tyid ASSIGN exp"))
+
+fundec  : FUNCTION ID LPAREN tyfds RPAREN EQ exp       (print("fundec -> FUNCTION ID LPAREN tyfds RPAREN"))
+        | FUNCTION ID LPAREN tyfds RPAREN COLON tyid EQ exp     (print("fundec -> FUNCTION ID LPAREN tyfds RPAREN COLON tyid EQ exp")) 
+
+ty      : ID                            (print("ty -> ID"))
+        | LBRACE tyfds RBRACE           (print("ty -> LBRACE tyfds RBRACE"))
+        | ARRAY OF ID                   (print("ty -> ARRAY OF ID"))
+
+tyfds   : NIL                           (print("tyfds -> NIL"))         
+        | ID COLON tyid                 (print("tyfds -> ID COLON tyid"))
+        | tyfds COMMA tyfds             (print("tyfds -> tyfds COMMA tyfds"))
+
+be      : be OR be                      (print("be -> be OR be"))
+        | be AND be                     (print("be -> be AND be"))
+        | ae EQ ae                      (print("be -> ae EQ ae"))
+        | ID                            (print("be -> ID"))
+
+ae      : ae PLUS ae                    (print("ae -> ae PLUS ae"))
+        | ID                            (print("ae -> ID"))
+	
+exp     : ID 			        (print("exp -> ID"))
+        | INT                           (print("exp -> INT"))
+        | STRING                        (print("exp -> STRING"))
+        | exp PLUS exp                  (print("exp -> exp PLUS exp"))
+        | exp MINUS exp                 (print("exp -> exp MINUS exp"))
+        | exp TIMES exp                 (print("exp -> exp TIMES exp"))
+        | MINUS exp %prec UMINUS        (print("exp -> MINUS exp"))
+
+tyid    : int                           (print("tyid -> int"))
+        | string                        (print("tyid -> string"))
+        | ID                            (print("tyid -> ID"))
